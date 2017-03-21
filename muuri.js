@@ -1936,8 +1936,8 @@
   Muuri.Item.prototype._refresh = function () {
 
     if (!this._hidden) {
-      this._width = Math.round(getDimension(this._element, 'width', true));
-      this._height = Math.round(getDimension(this._element, 'height', true));
+      this._width = Math.floor(getDimension(this._element, 'width', true));
+      this._height = Math.floor(getDimension(this._element, 'height', true));
     }
 
   };
@@ -2699,43 +2699,15 @@
    */
   function getDimension(el, dimension, withMargin) {
 
-    var ret = el.getBoundingClientRect()[dimension];
     var isHeight = dimension === 'height';
     var dimensionCapitalized = isHeight ? 'Height' : 'Width';
-    var innerDimension = 'inner' + dimensionCapitalized;
-    var clientDimension = 'client' + dimensionCapitalized;
-    var edgeA = isHeight ? 'top' : 'left';
-    var edgeB = isHeight ? 'bottom' : 'right';
+    var includeMargin = ( withMargin === true ) ? true : false;
 
-    if (withMargin) {
-
-      var marginA = parseFloat(getStyle(el, 'margin-' + edgeA));
-      var marginB = parseFloat(getStyle(el, 'margin-' + edgeB));
-      ret += marginA > 0 ? marginA : 0;
-      ret += marginB > 0 ? marginB : 0;
-
+    if ( dimensionCapitalized == 'Height' ) {
+        return $( el ).outerHeight( includeMargin );
+    } else {
+        return $( el ).outerWidth( includeMargin );
     }
-    else {
-
-      var borderA;
-      var borderB;
-
-      if (el === document.documentElement) {
-        ret -= global[innerDimension] - document.documentElement[clientDimension];
-      }
-      else {
-        borderA = parseFloat(getStyle(el, 'border-' + edgeA + '-width'));
-        borderB = parseFloat(getStyle(el, 'border-' + edgeB + '-width'));
-        ret -= Math.round(ret) - el[clientDimension] - borderA - borderB;
-      }
-
-      ret -= borderA !== undefined ? borderA : parseFloat(getStyle(el, 'border-' + edgeA + '-width'));
-      ret -= borderB !== undefined ? borderB : parseFloat(getStyle(el, 'border-' + edgeB + '-width'));
-
-    }
-
-    return ret;
-
   }
 
   /**
